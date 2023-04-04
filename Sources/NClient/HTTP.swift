@@ -40,3 +40,36 @@ extension URLRequest {
         setValue(value, forHTTPHeaderField: name.rawValue)
     }
 }
+
+extension URL {
+    struct PathComponents {
+        private(set) var stringValue: String = ""
+
+        mutating func append<S: LosslessStringConvertible>(_ component: S) {
+            if !stringValue.isEmpty, stringValue.last != "/" {
+                stringValue.append("/")
+            }
+            stringValue.append(String(describing: component))
+        }
+
+        mutating func append<T: RawRepresentable>(_ component: T) where T.RawValue: LosslessStringConvertible {
+            append(component.rawValue)
+        }
+    }
+}
+
+extension URLComponents {
+    init(path: String, queryItems: [URLQueryItem] = []) {
+        self.init()
+        self.path = path
+        // Avoid setting queryItems to [] as that appends a trailing ? to the url
+        self.queryItems = queryItems.isEmpty ? nil : queryItems
+    }
+
+    mutating func appendPathComponents(_ pathComponents: URL.PathComponents) {
+        if !path.isEmpty, path.last != "/" {
+            path.append("/")
+        }
+        path.append(pathComponents.stringValue)
+    }
+}
