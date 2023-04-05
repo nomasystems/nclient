@@ -6,16 +6,12 @@ import Foundation
 
 public final class APIClient {
     private let urlSession: URLSession
-    let baseUrl: URL
+    private let baseUrl: URL
 
-    init(baseUrl: URL) {
-        let config: URLSessionConfiguration = {
-            let config = URLSessionConfiguration.default
-            config.httpShouldSetCookies = false
-            config.httpCookieAcceptPolicy = .never
-            return config
-        }()
-        self.urlSession = URLSession(configuration: config)
+    init(baseUrl: URL, config: URLSessionConfiguration = URLSessionConfiguration.default) {
+        config.httpShouldSetCookies = false
+        config.httpCookieAcceptPolicy = .never
+        urlSession = URLSession(configuration: config)
         self.baseUrl = baseUrl
     }
 }

@@ -1,8 +1,5 @@
 //
-//  EndpointTests.swift
-//  
-//
-//  Created by Serafín Ennes Moscoso on 4/4/23.
+//  Copyright © Nomasystems S.L.. All rights reserved.
 //
 
 import XCTest
@@ -77,15 +74,14 @@ final class EndpointTests: XCTestCase {
 
         let responseBody = try endpoint.deserializeBody(mockResponseData)
         XCTAssertNotNil(responseBody)
-        XCTAssertEqual(responseBody.responseMessage, "Hello")
+        XCTAssertEqual(responseBody.responseMessage, "Hello, world!")
     }
 
 }
 
-// MARK: - Mock Data
-
-private let mockBaseUrl = URL(string: "https://example.com")!
-private let mockPath = "path"
+let mockBaseUrl = URL(string: "https://example.com")!
+let mockPath = "path"
+let mockEndpointURL = mockBaseUrl.appendingPathComponent(mockPath)
 
 struct MockParameters {
     let name: String
@@ -100,9 +96,10 @@ struct MockResponseBody: Decodable {
     let responseMessage: String
 }
 
+let mockMessage = "Hello, world!"
 let mockParameters = MockParameters(name: "John", age: 30)
-let mockRequestBody = MockRequestBody(message: "Hello, world!")
-let mockResponseData = "{\"responseMessage\":\"Hello\"}".data(using: .utf8)!
+let mockRequestBody = MockRequestBody(message: mockMessage)
+let mockResponseData = "{\"responseMessage\":\"\(mockMessage)\"}".data(using: .utf8)!
 
 private struct MockEndpoint: Endpoint {
     func url(parameters: Parameters) -> URLComponents {
@@ -112,7 +109,7 @@ private struct MockEndpoint: Endpoint {
 
 private struct MockEndpointWithParameters: Endpoint {
     typealias Parameters = MockParameters
-    
+
     func url(parameters: Parameters) -> URLComponents {
         .init(
             path: mockPath + "/search",
@@ -125,7 +122,6 @@ private struct MockEndpointWithParameters: Endpoint {
 }
 
 private struct MockEndpointWithRequestBody: Endpoint {
-
     typealias RequestBody = MockRequestBody
 
     var method: HTTP.Method {
@@ -138,7 +134,6 @@ private struct MockEndpointWithRequestBody: Endpoint {
 }
 
 private struct MockEndpointWithResponseBody: Endpoint {
-
     typealias ResponseBody = MockResponseBody
 
     func url(parameters: Parameters) -> URLComponents {
