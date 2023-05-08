@@ -4,8 +4,8 @@
 
 import Foundation
 
-enum HTTP {
-    enum Method: String {
+public enum HTTP {
+    public enum Method: String {
         case GET
         case DELETE
         case POST
@@ -42,7 +42,7 @@ extension URLRequest {
 }
 
 extension URL {
-    struct PathComponents {
+    public struct PathComponents {
         private(set) var stringValue: String = ""
 
         mutating func append<S: LosslessStringConvertible>(_ component: S) {
@@ -58,7 +58,7 @@ extension URL {
     }
 }
 
-extension URLComponents {
+public extension URLComponents {
     init(path: String, queryItems: [URLQueryItem] = []) {
         self.init()
         self.path = path
