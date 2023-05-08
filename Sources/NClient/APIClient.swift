@@ -8,7 +8,7 @@ public final class APIClient {
     private let urlSession: URLSession
     private let baseUrl: URL
 
-    init(baseUrl: URL, config: URLSessionConfiguration = URLSessionConfiguration.default) {
+    public init(baseUrl: URL, config: URLSessionConfiguration = URLSessionConfiguration.default) {
         config.httpShouldSetCookies = false
         config.httpCookieAcceptPolicy = .never
         urlSession = URLSession(configuration: config)
@@ -16,7 +16,7 @@ public final class APIClient {
     }
 }
 
-extension APIClient {
+public extension APIClient {
 
     func performEndpointRequest<E: Endpoint>(
         endpoint: E,
