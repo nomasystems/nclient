@@ -4,6 +4,6 @@
 
 import Foundation
 
-struct Empty {
-    static let empty = Empty()
+public struct Empty {
+    public static let empty = Empty()
 }

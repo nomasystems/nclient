@@ -16,7 +16,7 @@ public final class APIClient: NSObject {
     }
 }
 
-extension APIClient {
+public extension APIClient {
 
     func performEndpointRequest<E: Endpoint>(
         endpoint: E,

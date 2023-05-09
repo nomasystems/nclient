@@ -5,7 +5,7 @@
 import Foundation
 
 /// Describes an HTTP API endpoint (method + path + parameters)
-protocol Endpoint {
+public protocol Endpoint {
     associatedtype Parameters = Empty
     associatedtype RequestBody = Empty
     associatedtype ResponseBody = Empty
@@ -17,23 +17,23 @@ protocol Endpoint {
     func deserializeBody(_ data: Data) throws -> ResponseBody
 }
 
-protocol _EndpointAuth {}
-protocol _EndpointAuthNone: _EndpointAuth {}
-protocol _EndpointAuthAccessToken: _EndpointAuth {}
+public protocol _EndpointAuth {}
+public protocol _EndpointAuthNone: _EndpointAuth {}
+public protocol _EndpointAuthAccessToken: _EndpointAuth {}
 
-enum EndpointAuth {
-    enum None: _EndpointAuthNone {}
-    enum UserSessionOptional: _EndpointAuthNone, _EndpointAuthAccessToken {}
-    enum UserSessionRequired: _EndpointAuthAccessToken {}
+public enum EndpointAuth {
+    public enum None: _EndpointAuthNone {}
+    public enum UserSessionOptional: _EndpointAuthNone, _EndpointAuthAccessToken {}
+    public enum UserSessionRequired: _EndpointAuthAccessToken {}
 }
 
-extension Endpoint {
+public extension Endpoint {
     var method: HTTP.Method { .GET }
 }
 
 // MARK: Request creation
 
-extension Endpoint {
+public extension Endpoint {
     func request(
         baseUrl: URL,
         parameters: Parameters,
@@ -57,11 +57,11 @@ extension Endpoint {
 
 // MARK: Serialize
 
-extension Endpoint where RequestBody == Empty {
+public extension Endpoint where RequestBody == Empty {
     func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {}
 }
 
-extension Endpoint where RequestBody: Encodable {
+public extension Endpoint where RequestBody: Encodable {
     func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {
         request.setHeader(.contentType, value: HTTP.MIMEType.json)
         let data = try JSONEncoder().encode(body)
@@ -71,13 +71,13 @@ extension Endpoint where RequestBody: Encodable {
 
 // MARK: Deserialize
 
-extension Endpoint where ResponseBody == Empty {
+public extension Endpoint where ResponseBody == Empty {
     func deserializeBody(_ data: Data) throws -> ResponseBody {
         .empty
     }
 }
 
-extension Endpoint where ResponseBody: Decodable {
+public extension Endpoint where ResponseBody: Decodable {
     func deserializeBody(_ data: Data) throws -> ResponseBody {
         if let responseBody: ResponseBody = try? JSONDecoder().decode(ResponseBody.self, from: data) {
             return responseBody

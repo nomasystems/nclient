@@ -4,7 +4,7 @@
 
 import Foundation
 
-struct Response<Body> {
-    let http: HTTPURLResponse
-    let body: Body
+public struct Response<Body> {
+    public let http: HTTPURLResponse
+    public let body: Body
 }
