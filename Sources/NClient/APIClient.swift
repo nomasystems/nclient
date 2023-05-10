@@ -8,8 +8,8 @@ public final class APIClient: NSObject {
     private let baseUrl: URL
     private var urlSession: URLSession!
 
-    init(baseUrl: URL,
-         config: URLSessionConfiguration = URLSessionConfiguration.default) {
+    public init(baseUrl: URL,
+                config: URLSessionConfiguration = URLSessionConfiguration.default) {
         self.baseUrl = baseUrl
         super.init()
         urlSession = URLSession(configuration: config, delegate: self, delegateQueue: nil)
