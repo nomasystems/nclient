@@ -4,7 +4,9 @@
 
 import Foundation
 
+/// A namespace for handling HTTP-related functionality.
 public enum HTTP {
+    /// Represents an HTTP method.
     public enum Method: String {
         case GET
         case DELETE
@@ -12,14 +14,19 @@ public enum HTTP {
         case PUT
     }
 
+    /// Represents the name of an HTTP header.
     struct HeaderName: RawRepresentable {
         let rawValue: String
     }
 }
 
 extension HTTP {
+    /// Represents common MIME types used in HTTP requests and responses.
     enum MIMEType {
+        /// JSON data.
         static let json = "application/json"
+
+        /// URL-encoded form data.
         static let formUrlEncoded = "application/x-www-form-urlencoded"
     }
 }
@@ -31,7 +38,10 @@ extension HTTP.HeaderName {
 }
 
 extension HTTP.HeaderName {
+    /// The "Accept" header name.
     static let accept = HTTP.HeaderName("Accept")
+
+    /// The "Content-Type" header name.
     static let contentType = HTTP.HeaderName("Content-Type")
 }
 
