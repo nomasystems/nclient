@@ -62,5 +62,5 @@ And that's it!
 
 ## Release History
 
-* 1.1
+* 1.0
     * Initial Version
