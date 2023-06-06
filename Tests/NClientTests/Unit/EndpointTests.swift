@@ -13,7 +13,6 @@ final class EndpointTests: XCTestCase {
         let endpoint = MockEndpoint()
         let request = try endpoint.request(
             baseUrl: mockBaseUrl,
-            parameters: .empty,
             requestBody: .empty
         )
 
@@ -27,10 +26,10 @@ final class EndpointTests: XCTestCase {
     }
 
     func testEndpointWithParameters() throws {
-        let endpoint = MockEndpointWithParameters()
+        let endpoint = MockEndpointWithParameters(name: mockParameters.name,
+                                                  age: mockParameters.age)
         let request = try endpoint.request(
             baseUrl: mockBaseUrl,
-            parameters: mockParameters,
             requestBody: .empty
         )
 
@@ -41,7 +40,6 @@ final class EndpointTests: XCTestCase {
         let endpoint = MockEndpointWithRequestBody()
         let request = try endpoint.request(
             baseUrl: mockBaseUrl,
-            parameters: .empty,
             requestBody: mockRequestBody
         )
 
@@ -102,41 +100,38 @@ let mockRequestBody = MockRequestBody(message: mockMessage)
 let mockResponseData = "{\"responseMessage\":\"\(mockMessage)\"}".data(using: .utf8)!
 
 private struct MockEndpoint: Endpoint {
-    func url(parameters: Parameters) -> URLComponents {
-        .init(path: mockPath)
-    }
+    let path: String = mockPath
 }
 
 private struct MockEndpointWithParameters: Endpoint {
-    typealias Parameters = MockParameters
 
-    func url(parameters: Parameters) -> URLComponents {
-        .init(
-            path: mockPath + "/search",
-            queryItems: [
-                .init(name: "name", value: parameters.name),
-                .init(name: "age", value: String(parameters.age))
-            ]
-        )
+    let name: String
+    let age: Int
+
+    var path: String { mockPath + "/search" }
+
+    var queryItems: [URLQueryItem] {
+        [
+            .init(name: "name", value: name),
+            .init(name: "age", value: String(age))
+        ]
     }
 }
 
 private struct MockEndpointWithRequestBody: Endpoint {
+
     typealias RequestBody = MockRequestBody
+
+    var path: String { mockPath }
 
     var method: HTTP.Method {
         .POST
     }
-
-    func url(parameters: Parameters) -> URLComponents {
-        .init(path: mockPath)
-    }
 }
 
 private struct MockEndpointWithResponseBody: Endpoint {
+
     typealias ResponseBody = MockResponseBody
 
-    func url(parameters: Parameters) -> URLComponents {
-        .init(path: mockPath)
-    }
+    var path: String { mockPath }
 }

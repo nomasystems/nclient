@@ -35,15 +35,13 @@ struct User: Decodable {
 Define the fetch user endpoint by conforming `Endpoint`:
 ```swift
 struct FetchUserEndpoint: Endpoint {
-    struct Parameters {
-        let id: Int
-    }
+
+    let userId: Int 
 
     typealias ResponseBody = User
 
-    func url(parameters: Parameters) -> URLComponents {
-        .init(path: "/user/\(parameters.id)")
-    }
+    var path: String { "/user/\(userId)" }
+    
 }
 ```
 
@@ -51,8 +49,7 @@ Call `performEndpointRequest` to execute the request and get the data needed:
 ```swift
 func fetchUser(by id: Int) async throws -> User {
     try await client.performEndpointRequest(
-        endpoint: FetchUserEndpoint(),
-        parameters: .init(id: id),
+        endpoint: FetchUserEndpoint(userId: id),
         requestBody: .empty
     ).body
 }

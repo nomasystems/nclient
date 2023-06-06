@@ -22,7 +22,6 @@ public enum EndpointAuth {
 
 /// Describes an HTTP API endpoint (method + path + parameters)
 public protocol Endpoint {
-    associatedtype Parameters = Empty
     associatedtype RequestBody = Empty
     associatedtype ResponseBody = Empty
     associatedtype Auth: _EndpointAuth = EndpointAuth.None
@@ -30,8 +29,9 @@ public protocol Endpoint {
     /// The HTTP method of the endpoint.
     var method: HTTP.Method { get }
 
-    /// Constructs the URL components for the endpoint given the parameters.
-    func url(parameters: Parameters) -> URLComponents
+    var path: String { get }
+
+    var queryItems: [URLQueryItem] { get }
 
     /// Serializes the request body into the given URLRequest.
     func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws
@@ -49,6 +49,12 @@ public extension Endpoint {
 
 public extension Endpoint {
 
+    var queryItems: [URLQueryItem] { [] }
+
+    var urlComponents: URLComponents {
+        return URLComponents(path: path, queryItems: queryItems)
+    }
+
     /// Creates a URLRequest for the endpoint with the provided parameters and request body.
     ///
     /// - Parameters:
@@ -61,12 +67,11 @@ public extension Endpoint {
     /// - Throws: An error if the URL construction fails or if there is an error serializing the request body.
     func request(
         baseUrl: URL,
-        parameters: Parameters,
         requestBody: RequestBody
     ) throws
         -> URLRequest
     {
-        let urlComponents = url(parameters: parameters)
+
         guard let url = urlComponents.url(relativeTo: baseUrl) else {
             throw URLError(.badURL)
         }

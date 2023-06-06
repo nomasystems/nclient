@@ -42,14 +42,12 @@ public extension APIClient {
     /// - Important: This method is async and should be called using `await` to wait for the response.
     func performEndpointRequest<E: Endpoint>(
         endpoint: E,
-        parameters: E.Parameters,
         requestBody: E.RequestBody
     ) async throws -> Response<E.ResponseBody>
     where E.Auth: _EndpointAuthNone
     {
         let request = try endpoint.request(
             baseUrl: baseUrl,
-            parameters: parameters,
             requestBody: requestBody
         )
 
