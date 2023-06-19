@@ -43,7 +43,6 @@ final class APIClientTests: XCTestCase {
         // Act
         let response = try await sut.performEndpointRequest(
             endpoint: MockEndpointWithResponseBody(),
-            parameters: .empty,
             requestBody: .empty
         )
         // Assert
@@ -53,9 +52,6 @@ final class APIClientTests: XCTestCase {
 }
 
 private struct MockEndpointWithResponseBody: Endpoint {
+    let path: String = mockPath
     typealias ResponseBody = MockResponseBody
-
-    func url(parameters: Parameters) -> URLComponents {
-        .init(path: mockPath)
-    }
 }
