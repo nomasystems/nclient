@@ -30,11 +30,13 @@ public protocol Endpoint {
     /// The HTTP method of the endpoint.
     var method: HTTP.Method { get }
 
+    var contentType: HTTP.MIMEType { get }
+
     /// Constructs the URL components for the endpoint given the parameters.
     func url(parameters: Parameters) -> URLComponents
 
     /// Serializes the request body into the given URLRequest.
-    func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws
+    func serializeBody(_ body: RequestBody, contentType: HTTP.MIMEType, into request: inout URLRequest) throws
 
     /// Deserializes the response body from the received data.
     func deserializeBody(_ data: Data) throws -> ResponseBody
@@ -43,6 +45,9 @@ public protocol Endpoint {
 public extension Endpoint {
     /// The default HTTP method for the endpoint is `GET`.
     var method: HTTP.Method { .GET }
+
+    /// The default Content-Type  for the endpoint is `application/json`.
+    var contentType: HTTP.MIMEType { .json }
 }
 
 // MARK: Request creation
@@ -73,8 +78,8 @@ public extension Endpoint {
 
         var request = URLRequest(url: url.absoluteURL)
         request.httpMethod = method.rawValue
-        request.setHeader(.accept, value: HTTP.MIMEType.json)
-        try serializeBody(requestBody, into: &request)
+        request.setHeader(.accept, value: HTTP.MIMEType.json.rawValue)
+        try serializeBody(requestBody, contentType: contentType, into: &request)
         
         return request
     }
@@ -84,15 +89,23 @@ public extension Endpoint {
 
 public extension Endpoint where RequestBody == Empty {
     /// No implementation in case of empty request body.
-    func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {}
+    func serializeBody(_ body: RequestBody, contentType: HTTP.MIMEType, into request: inout URLRequest) throws {}
 }
 
 public extension Endpoint where RequestBody: Encodable {
     /// Serializes an encodable request body as JSON.
-    func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {
-        request.setHeader(.contentType, value: HTTP.MIMEType.json)
+    func serializeBody(_ body: RequestBody, contentType: HTTP.MIMEType, into request: inout URLRequest) throws {
+        request.setHeader(.contentType, value: contentType.rawValue)
         let data = try JSONEncoder().encode(body)
         request.httpBody = data
+    }
+}
+
+public extension Endpoint where RequestBody == Data {
+    /// Bypass serialization if request body is already of Data type
+    func serializeBody(_ body: RequestBody, contentType: HTTP.MIMEType, into request: inout URLRequest) throws {
+        request.setHeader(.contentType, value: contentType.rawValue)
+        request.httpBody = body
     }
 }
 

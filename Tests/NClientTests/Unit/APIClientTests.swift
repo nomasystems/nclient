@@ -35,7 +35,7 @@ final class APIClientTests: XCTestCase {
             result: .success(
                 .init(
                     statusCode: 200,
-                    headers: [HTTP.HeaderName.contentType.rawValue: HTTP.MIMEType.json],
+                    headers: [HTTP.HeaderName.contentType.rawValue: HTTP.MIMEType.json.rawValue],
                     data: mockResponseData
                 )
             )
