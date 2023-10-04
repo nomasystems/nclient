@@ -18,16 +18,14 @@ public enum HTTP {
     struct HeaderName: RawRepresentable {
         let rawValue: String
     }
-}
 
-extension HTTP {
-    /// Represents common MIME types used in HTTP requests and responses.
-    enum MIMEType {
-        /// JSON data.
-        static let json = "application/json"
+    /// Supported MIME types
+    public struct MIMEType: RawRepresentable {
+        public let rawValue: String
 
-        /// URL-encoded form data.
-        static let formUrlEncoded = "application/x-www-form-urlencoded"
+        public init(rawValue: String) {
+            self.rawValue = rawValue
+        }
     }
 }
 
@@ -43,6 +41,17 @@ extension HTTP.HeaderName {
 
     /// The "Content-Type" header name.
     static let contentType = HTTP.HeaderName("Content-Type")
+}
+
+public extension HTTP.MIMEType {
+    /// JSON data.
+    static let json = HTTP.MIMEType(rawValue: "application/json")
+
+    /// URL-encoded form data.
+    static let formUrlEncoded = HTTP.MIMEType(rawValue: "application/x-www-form-urlencoded")
+
+    /// MP4
+    static let mp4 = HTTP.MIMEType(rawValue: "audio/mp4")
 }
 
 extension URLRequest {

@@ -20,7 +20,7 @@ final class EndpointTests: XCTestCase {
         XCTAssertEqual(request.url?.absoluteString, "https://example.com/path")
         XCTAssertEqual(request.httpMethod, HTTP.Method.GET.rawValue)
 
-        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.accept.rawValue), HTTP.MIMEType.json)
+        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.accept.rawValue), HTTP.MIMEType.json.rawValue)
         XCTAssertNil(request.value(forHTTPHeaderField: HTTP.HeaderName.contentType.rawValue))
 
         XCTAssertNil(request.httpBody)
@@ -48,12 +48,30 @@ final class EndpointTests: XCTestCase {
         XCTAssertEqual(request.url?.absoluteString, "https://example.com/path")
         XCTAssertEqual(request.httpMethod, HTTP.Method.POST.rawValue)
 
-        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.accept.rawValue), HTTP.MIMEType.json)
-        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.contentType.rawValue), HTTP.MIMEType.json)
+        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.accept.rawValue), HTTP.MIMEType.json.rawValue)
+        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.contentType.rawValue), HTTP.MIMEType.json.rawValue)
 
         let bodyData = try JSONEncoder().encode(mockRequestBody)
         XCTAssertNotNil(request.httpBody)
         XCTAssertEqual(request.httpBody, bodyData)
+    }
+
+    func testEndpointWithRawRequestBody() throws {
+        let endpoint = MockEndpointWithRawResponseBody()
+        let request = try endpoint.request(
+            baseUrl: mockBaseUrl,
+            parameters: .empty,
+            requestBody: try XCTUnwrap(mockMessage.data(using: .utf8))
+        )
+
+        XCTAssertEqual(request.url?.absoluteString, "https://example.com/path")
+        XCTAssertEqual(request.httpMethod, HTTP.Method.POST.rawValue)
+
+        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.accept.rawValue), HTTP.MIMEType.json.rawValue)
+        XCTAssertEqual(request.value(forHTTPHeaderField: HTTP.HeaderName.contentType.rawValue), HTTP.MIMEType.mp4.rawValue)
+
+        let requestBody = try XCTUnwrap(request.httpBody)
+        XCTAssertEqual(String(data: requestBody, encoding: .utf8), mockMessage)
     }
 
     // MARK: Deserialize
@@ -135,6 +153,22 @@ private struct MockEndpointWithRequestBody: Endpoint {
 
 private struct MockEndpointWithResponseBody: Endpoint {
     typealias ResponseBody = MockResponseBody
+
+    func url(parameters: Parameters) -> URLComponents {
+        .init(path: mockPath)
+    }
+}
+
+private struct MockEndpointWithRawResponseBody: Endpoint {
+    typealias RequestBody = Data
+
+    var method: HTTP.Method {
+        .POST
+    }
+
+    var contentType: HTTP.MIMEType {
+        .mp4
+    }
 
     func url(parameters: Parameters) -> URLComponents {
         .init(path: mockPath)

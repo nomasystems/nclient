@@ -30,6 +30,8 @@ public protocol Endpoint {
     /// The HTTP method of the endpoint.
     var method: HTTP.Method { get }
 
+    var contentType: HTTP.MIMEType { get }
+
     /// Constructs the URL components for the endpoint given the parameters.
     func url(parameters: Parameters) -> URLComponents
 
@@ -43,6 +45,9 @@ public protocol Endpoint {
 public extension Endpoint {
     /// The default HTTP method for the endpoint is `GET`.
     var method: HTTP.Method { .GET }
+
+    /// The default Content-Type  for the endpoint is `application/json`.
+    var contentType: HTTP.MIMEType { .json }
 }
 
 // MARK: Request creation
@@ -73,7 +78,7 @@ public extension Endpoint {
 
         var request = URLRequest(url: url.absoluteURL)
         request.httpMethod = method.rawValue
-        request.setHeader(.accept, value: HTTP.MIMEType.json)
+        request.setHeader(.accept, value: HTTP.MIMEType.json.rawValue)
         try serializeBody(requestBody, into: &request)
         
         return request
@@ -90,9 +95,17 @@ public extension Endpoint where RequestBody == Empty {
 public extension Endpoint where RequestBody: Encodable {
     /// Serializes an encodable request body as JSON.
     func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {
-        request.setHeader(.contentType, value: HTTP.MIMEType.json)
+        request.setHeader(.contentType, value: contentType.rawValue)
         let data = try JSONEncoder().encode(body)
         request.httpBody = data
+    }
+}
+
+public extension Endpoint where RequestBody == Data {
+    /// Bypass serialization if request body is already of Data type
+    func serializeBody(_ body: RequestBody, into request: inout URLRequest) throws {
+        request.setHeader(.contentType, value: contentType.rawValue)
+        request.httpBody = body
     }
 }
 
